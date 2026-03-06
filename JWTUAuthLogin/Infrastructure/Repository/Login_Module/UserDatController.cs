@@ -117,8 +117,6 @@ namespace JWTUAuthLogin.Infrastructure.Repository.Login_Module
                     RegToken = user.RegToken,
                     DeviceID = user.DeviceID,
                     LocalTimeZone = user.LocalTimeZone,
-                    OldPassword = user.OldPassword,
-                    NewPassword = user.NewPassword
                 };
 
                 mb.UserData.Add(newUser);

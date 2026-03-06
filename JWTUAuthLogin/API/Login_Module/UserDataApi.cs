@@ -18,6 +18,7 @@ namespace JWTUAuthLogin.API.Login_Module
         {
             _programAccessChecker = programAccessChecker;
         }
+
         [HttpPost("DoRegister")]
         [AllowAnonymous]
         public async Task<IActionResult> register(UserDataDTO userData)
