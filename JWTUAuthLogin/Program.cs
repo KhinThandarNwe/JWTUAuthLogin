@@ -1,65 +1,87 @@
+
+using JWTUAuthLogin.DBModel;
+using JWTUAuthLogin.DBModels.DB_UnitOfWork;
+using JWTUAuthLogin.Infrastructure.Repository.Login_Module;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//  Register services BEFORE build
+#region Services
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(option =>
 {
-    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,   // better use Http
-        Scheme = "bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Enter JWT Bearer token"
-    });
-
-    option.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
-    });
-
     option.SwaggerDoc("v1", new OpenApiInfo
     {
-        Version = "v1",
-        Title = "FormatCRUD API",
-        Description = "An ASP.NET Core Web API for managing formats.",
-        Contact = new OpenApiContact
-        {
-            Name = "HKPAY",
-            Email = "kuu4.4.1999@gmail.com",
-        }
+        Title = "JWTUAuthLogin API",
+        Version = "v1"
     });
+
+    //option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    //{
+    //    Name = "Authorization",
+    //    Type = SecuritySchemeType.Http,
+    //    Scheme = "bearer",
+    //    BearerFormat = "JWT",
+    //    In = ParameterLocation.Header,
+    //    Description = "Enter JWT Bearer token"
+    //});
+
+    //option.AddSecurityRequirement(new OpenApiSecurityRequirement
+    //{
+    //    {
+    //        new OpenApiSecurityScheme
+    //        {
+    //            Reference = new OpenApiReference
+    //            {
+    //                Type = ReferenceType.SecurityScheme,
+    //                Id = "Bearer"
+    //            }
+    //        },
+    //        Array.Empty<string>()
+    //    }
+    //});
 });
+
+#endregion
+
+#region Database
+
+builder.Services.AddDbContext<MBDatabaseContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Connection"))
+);
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IProgramAccessChecker, ProgramAccessChecker>();
+
+#endregion
 
 var app = builder.Build();
 
-// Middleware pipeline
+#region Middleware
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "JWTUAuthLogin API V1");
+    });
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+
 app.UseRouting();
-app.UseAuthorization();
+
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
+
+#endregion
 
 app.Run();

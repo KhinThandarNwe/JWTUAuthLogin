@@ -25,7 +25,7 @@ namespace JWTUAuthLogin.Shared.Models
             Message = status.GetEnumDescription();
             ResultObject = null;
         }
-        public ServiceActionResult(ReturnStatus status, string message,object? resultObject)
+        public ServiceActionResult(ReturnStatus status, string message, object? resultObject)
         {
             Status = status;
             StatusTerm = status.ToString();

@@ -18,7 +18,7 @@ namespace JWTUAuthLogin.Shared.Extensions
                 ? attributes.First().Description
                 : value.ToString();
         }
-     public static string? GetStringValue(this Enum value)
+        public static string? GetStringValue(this Enum value)
         {
             var type = value.GetType();
             var fieldInfo = type.GetField(value.ToString());

@@ -16,6 +16,12 @@ namespace JWTUAuthLogin.DTO.Login_Module
         [JsonPropertyName("Password")]
         public string? Password { get; set; }
 
+        [JsonPropertyName("OldPassword")]
+        public string? OldPassword { get; set; }
+
+        [JsonPropertyName("NewPassword")]
+        public string? NewPassword { get; set; }
+
         [JsonPropertyName("EmailConfirmation")]
         public string? EmailConfirmation { get; set; }
 
@@ -36,5 +42,8 @@ namespace JWTUAuthLogin.DTO.Login_Module
 
         [JsonPropertyName("LocalTimeZone")]
         public string? LocalTimeZone { get; set; }
+
+        [JsonPropertyName("DeviceID")]
+        public string? DeviceID { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using JWTUAuthLogin.DBModels.JWTUAuthLogin;
+﻿
+using JWTUAuthLogin.DBModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace JWTUAuthLogin.DBModels.DB_UnitOfWork
