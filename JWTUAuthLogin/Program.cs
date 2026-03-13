@@ -2,7 +2,9 @@
 using JWTUAuthLogin.DBModel;
 using JWTUAuthLogin.DBModels.DB_UnitOfWork;
 using JWTUAuthLogin.Infrastructure.Repository.Login_Module;
+using JWTUAuthLogin.Infrastructure.Repository.System_Module;
 using JWTUAuthLogin.Infrastructure.Repository.Token_Module;
+using JWTUAuthLogin.Shared.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -11,6 +13,7 @@ using System.Text;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
+IConfiguration? configuration = builder.Configuration;
 
 #region Services
 
@@ -63,6 +66,9 @@ builder.Services.AddDbContext<MBDatabaseContext>(options =>
 //builder.Services.AddInfraStructure();
 
 var jwt_Section = builder.Configuration.GetSection("JwtAuth");
+var secureConfig = new SecureConfigurationHelper(configuration);
+
+string jwtKey = secureConfig.GetSectionValue("JwtAuth", "Key");
 builder.Services.Configure<JwtAuth>(jwt_Section);
 builder
     .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -77,7 +83,7 @@ builder
             ValidIssuer = builder.Configuration["JwtAuth:Issuer"],
             ValidAudience = builder.Configuration["JwtAuth:Issuer"],
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["JwtAuth:Key"])
+                Encoding.UTF8.GetBytes(jwtKey)
             ),
             ClockSkew = TimeSpan.Zero
         };
@@ -125,6 +131,7 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IProgramAccessChecker, ProgramAccessChecker>();
+builder.Services.AddScoped<ITokenManager, TokenManagerController>();
 
 #endregion
 

@@ -18,17 +18,17 @@ namespace JWTUAuthLogin.Infrastructure.Repository.Token_Module
 
     public interface ITokenManager
     {
-        string GenerateToken(string user_id, string user_name);
+        string GenerateToken(string user_id, string device_id);
         ServiceActionResult ValidateToken(IHeaderDictionary Header);
         AuthorizedUser GetAuthorizedUser();
-        (string userId, string userName) GetUserIdFromToken();
+        (string userId, string licenseId) GetUserIdFromToken();
 
     }
 
     public class AuthorizedUser
     {
         public string userId { get; set; }
-        public string userName { get; set; }
+        public string licenseId { get; set; }
     }
     public class TokenManagerController : ITokenManager
     {
@@ -40,7 +40,7 @@ namespace JWTUAuthLogin.Infrastructure.Repository.Token_Module
             _JwtAuth = jwtAuth.Value;
             _httpContextAccessor = httpContextAccessor;
         }
-        public string GenerateToken(string user_id, string user_name)
+        public string GenerateToken(string user_id, string license_id)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_JwtAuth.Key));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -48,7 +48,7 @@ namespace JWTUAuthLogin.Infrastructure.Repository.Token_Module
             var claims = new[]
             {
                  new Claim("user_id", user_id),
-                new Claim("user_name", user_name),
+                new Claim("license_id", license_id),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
              };
             var token = new JwtSecurityToken(
@@ -86,7 +86,7 @@ namespace JWTUAuthLogin.Infrastructure.Repository.Token_Module
                 );
                 var jwtToken = (JwtSecurityToken)validatedToken;
                 var claims = jwtToken.Claims;
-                var userId = claims.First(x => x.Type == "user_id").Value;
+                var userId = claims.First(x => x.Type == "").Value;
                 return new ServiceActionResult(Shared.Enums.ReturnStatus.success, "", userId);
             }
             catch (Exception ex)
@@ -99,15 +99,15 @@ namespace JWTUAuthLogin.Infrastructure.Repository.Token_Module
         {
             AuthorizedUser user = new AuthorizedUser();
            user.userId = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == "user_id")?.Value;
-            user.userName = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == "user_name")?.Value;
+            user.licenseId = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == "license_id")?.Value;
             return user;
         }
 
-        public (string userId, string userName) GetUserIdFromToken()
+        public (string userId, string licenseId) GetUserIdFromToken()
         {
             var userId = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == "user_id")?.Value;
-            var userName = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == "user_name")?.Value;
-            return (userId, userName);
+            var licenseId = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == "license_id")?.Value;
+            return (userId, licenseId);
         }   
     }
 }

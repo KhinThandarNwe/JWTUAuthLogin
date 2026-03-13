@@ -9,7 +9,8 @@ namespace JWTUAuthLogin.API.Login_Module
 {
     [ApiController]
     [Route("api/[controller]")]
-    //[ApiExplorerSettings(GroupName = "Login")]
+    [Authorize]
+    [ApiExplorerSettings(GroupName = "Admin-API")]
     public class UserDataApi : ControllerBase
     {
         private readonly IProgramAccessChecker _programAccessChecker;
@@ -35,11 +36,11 @@ namespace JWTUAuthLogin.API.Login_Module
             }
         }
 
-        [HttpPost("DoLogin")]
+        [HttpPost("RenewToken")]
         [AllowAnonymous]
-        public async Task<IActionResult> login(string email, string password)
+        public async Task<IActionResult> renewToken(string email, string password)
         {
-            ServiceActionResult result = await _programAccessChecker.login(email, password);
+            ServiceActionResult result = await _programAccessChecker.renewToken(email, password);
             switch (result.Status)
             {
                 case ReturnStatus.success:
@@ -51,7 +52,6 @@ namespace JWTUAuthLogin.API.Login_Module
             }
         }
         [HttpPost("DoLogout")]
-        [AllowAnonymous]
         public async Task<IActionResult> logout(string email, string deviceId)
         {
             ServiceActionResult result = await _programAccessChecker.logout(email, deviceId);
@@ -66,8 +66,6 @@ namespace JWTUAuthLogin.API.Login_Module
             }
         }
         [HttpPost("ChangePassword")]
-
-        [AllowAnonymous]
         public IActionResult changePassword(int userId, string oldPassword, string newPassword)
         {
             ServiceActionResult result = _programAccessChecker.changePassword(userId, oldPassword, newPassword);

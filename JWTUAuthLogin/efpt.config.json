@@ -19,6 +19,10 @@
    "T4TemplatePath": null,
    "Tables": [
       {
+         "Name": "[dbo].[SysAttachment]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[SysErrorLog]",
          "ObjectType": 0
       },

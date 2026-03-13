@@ -2,6 +2,7 @@
 using JWTUAuthLogin.DBModel;
 using JWTUAuthLogin.DBModels.DB_UnitOfWork;
 using JWTUAuthLogin.DTO.Login_Module;
+using JWTUAuthLogin.Infrastructure.Repository.Token_Module;
 using JWTUAuthLogin.Shared.Common;
 using JWTUAuthLogin.Shared.Enums;
 using JWTUAuthLogin.Shared.Models;
@@ -11,7 +12,7 @@ namespace JWTUAuthLogin.Infrastructure.Repository.Login_Module
 {
     public interface IProgramAccessChecker
     {
-        Task<ServiceActionResult> login(string email, string password);
+        Task<ServiceActionResult> renewToken(string email, string password);
         Task<ServiceActionResult> register(UserDataDTO user);
         Task<ServiceActionResult> logout(string email, string deviceId);
         ServiceActionResult changePassword(int userId, string oldPassword, string newPassword);
@@ -21,9 +22,11 @@ namespace JWTUAuthLogin.Infrastructure.Repository.Login_Module
     {
         private string ControllerLogLabel = "ProgramAccessChecker";
         private readonly MBDatabaseContext mb;
+        private readonly ITokenManager _tokenManager;
 
-        public ProgramAccessChecker(IUnitOfWork unitOfWork)
+        public ProgramAccessChecker(IUnitOfWork unitOfWork, ITokenManager JWTAuthManager)
         {
+            _tokenManager = JWTAuthManager;
             mb = unitOfWork.DBContext;
         }
 
@@ -183,7 +186,7 @@ namespace JWTUAuthLogin.Infrastructure.Repository.Login_Module
                 );
             }
         }
-        public async Task<ServiceActionResult> login(string email, string password)
+        public async Task<ServiceActionResult> renewToken(string email, string password)
         {
             try
             {
@@ -194,8 +197,8 @@ namespace JWTUAuthLogin.Infrastructure.Repository.Login_Module
                         "Authentication failed: incorrect email or password."
                     );
                 }
-                var dbUser = await mb.UserData
-                    .FirstOrDefaultAsync(x => x.Email == email);
+
+                var dbUser = await mb.UserData.FirstOrDefaultAsync(x => x.Email == email);
 
                 if (dbUser == null)
                 {
@@ -214,6 +217,9 @@ namespace JWTUAuthLogin.Infrastructure.Repository.Login_Module
                     );
                 }
 
+                //  Generate JWT Token
+                var token = _tokenManager.GenerateToken(dbUser.UserId.ToString(),dbUser.DeviceID);
+
                 return new ServiceActionResult(
                     ReturnStatus.success,
                     "Login successful",
@@ -221,7 +227,8 @@ namespace JWTUAuthLogin.Infrastructure.Repository.Login_Module
                     {
                         UserId = dbUser.UserId,
                         Username = dbUser.Username,
-                        Email = dbUser.Email
+                        Email = dbUser.Email,
+                        Token = token   // JWT Token
                     }
                 );
             }

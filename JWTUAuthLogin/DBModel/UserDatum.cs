@@ -30,8 +30,4 @@ public partial class UserDatum
     public string LocalTimeZone { get; set; }
 
     public string DeviceID { get; set; }
-
-    public string OldPassword { get; set; }
-
-    public string NewPassword { get; set; }
 }

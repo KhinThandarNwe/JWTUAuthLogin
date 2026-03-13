@@ -13,12 +13,37 @@ public partial class MBDatabaseContext : DbContext
     {
     }
 
+    public virtual DbSet<SysAttachment> SysAttachments { get; set; }
+
     public virtual DbSet<SysErrorLog> SysErrorLogs { get; set; }
 
     public virtual DbSet<UserDatum> UserData { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<SysAttachment>(entity =>
+        {
+            entity.HasKey(e => e.AttachId).HasName("PK__tmp_ms_x__F517C3F51C171D6B");
+
+            entity.ToTable("SysAttachment");
+
+            entity.Property(e => e.AttachId).HasMaxLength(50);
+            entity.Property(e => e.AttachFileName).HasMaxLength(50);
+            entity.Property(e => e.AttachFilePath).HasMaxLength(50);
+            entity.Property(e => e.AttachOn).HasColumnType("datetime");
+            entity.Property(e => e.CraatedBy).HasMaxLength(50);
+            entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+            entity.Property(e => e.FileSize).HasColumnType("decimal(18, 0)");
+            entity.Property(e => e.LastAction).HasMaxLength(50);
+            entity.Property(e => e.LicenseId).HasMaxLength(50);
+            entity.Property(e => e.ModifiedBy).HasMaxLength(50);
+            entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
+            entity.Property(e => e.OriginalFileName).HasMaxLength(50);
+            entity.Property(e => e.ReferenceId).HasMaxLength(50);
+            entity.Property(e => e.ReferenceType).HasMaxLength(50);
+            entity.Property(e => e.Sector).HasMaxLength(50);
+        });
+
         modelBuilder.Entity<SysErrorLog>(entity =>
         {
             entity.HasKey(e => e.ErrorLogId).HasName("PK__SysError__D65247C23ABF6420");
@@ -44,20 +69,17 @@ public partial class MBDatabaseContext : DbContext
 
         modelBuilder.Entity<UserDatum>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__UserData__1788CC4C3DD9B2A1");
+            entity.HasKey(e => e.UserId).HasName("PK__tmp_ms_x__1788CC4CB4291C1D");
 
-            entity.Property(e => e.UserId).ValueGeneratedNever();
             entity.Property(e => e.DeviceID).HasMaxLength(50);
             entity.Property(e => e.Email).HasMaxLength(100);
             entity.Property(e => e.LocalTimeZone).HasMaxLength(50);
             entity.Property(e => e.Manufacturer).HasMaxLength(100);
             entity.Property(e => e.ModelNo).HasMaxLength(50);
-            entity.Property(e => e.NewPassword).HasMaxLength(50);
             entity.Property(e => e.OS)
                 .HasMaxLength(10)
                 .IsFixedLength();
             entity.Property(e => e.OSVersion).HasMaxLength(50);
-            entity.Property(e => e.OldPassword).HasMaxLength(50);
             entity.Property(e => e.Password).HasMaxLength(100);
             entity.Property(e => e.Username)
                 .IsRequired()
