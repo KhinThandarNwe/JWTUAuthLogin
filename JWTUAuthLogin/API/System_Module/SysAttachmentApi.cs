@@ -6,13 +6,16 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
+using System.Net.Mail;
+using System.Reflection.PortableExecutable;
 using System.Runtime.CompilerServices;
+using static System.Collections.Specialized.BitVector32;
 
 namespace JWTUAuthLogin.API.System_Module
 {
     [Route("api/[controller]")]
     [ApiController]
-    [ApiExplorerSettings(GroupName = "Admin-API")]
+    //[ApiExplorerSettings(GroupName = "Admin-API")]
     [Authorize]
     public class SysAttachmentApi : ControllerBase
     {
@@ -38,13 +41,21 @@ namespace JWTUAuthLogin.API.System_Module
                 var section = await reader.ReadNextSectionAsync();
                 string response = string.Empty;
 
+                // if (await _contorller.UploadFile(reader, section, recordType, recordId, recordCategory))
+                // {
+                //     return Ok("success");
+                // }
+                // else
+                // {
+                //     return BadRequest("failed");
+                // }
                 ServiceActionResult result = await _controller.UploadFile(
-                            reader,
-                            section,
-                            recordType,
-                            recordId,
-                            recordCategory
-                        );
+                    reader,
+                    section,
+                    recordType,
+                    recordId,
+                    recordCategory
+                );
                 switch (result.Status)
                 {
                     case ReturnStatus.success:
@@ -54,6 +65,26 @@ namespace JWTUAuthLogin.API.System_Module
                     default:
                         return StatusCode(500, result);
                 }
+
+                //if (file == null || file.Length == 0)
+                //    return BadRequest("File not selected");
+
+                //var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+
+                //// create folder if not exists
+                //if (!Directory.Exists(uploadPath))
+                //{
+                //    Directory.CreateDirectory(uploadPath);
+                //}
+
+                //var filePath = Path.Combine(uploadPath, file.FileName);
+
+                //using (var stream = new FileStream(filePath, FileMode.Create))
+                //{
+                //    await file.CopyToAsync(stream);
+                //}
+
+                //return Ok(new { message = "Upload successful", fileName = file.FileName });
             }
 
             catch (Exception ex)

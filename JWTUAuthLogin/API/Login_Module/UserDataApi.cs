@@ -10,7 +10,7 @@ namespace JWTUAuthLogin.API.Login_Module
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    [ApiExplorerSettings(GroupName = "Admin-API")]
+    //[ApiExplorerSettings(GroupName = "Admin-API")]
     public class UserDataApi : ControllerBase
     {
         private readonly IProgramAccessChecker _programAccessChecker;

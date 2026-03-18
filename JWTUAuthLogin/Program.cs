@@ -132,6 +132,9 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IProgramAccessChecker, ProgramAccessChecker>();
 builder.Services.AddScoped<ITokenManager, TokenManagerController>();
+builder.Services.AddScoped<ISysAttachmentController, SysAttachmentController>();
+// Register HttpClient for HTTP-based file operations
+builder.Services.AddHttpClient();
 
 #endregion
 

@@ -5,7 +5,7 @@ using JWTUAuthLogin.Infrastructure.Repository.Token_Module;
 
 namespace JWTUAuthLogin.Infrastructure
 {
-    public static class ServiceRegistration
+    public static class fluttServiceRegistration
     {
         public static void AddInterfraStructure(this IServiceCollection services)
         {

@@ -44,6 +44,7 @@ namespace JWTUAuthLogin.Infrastructure.Repository.System_Module
         {
             _mb = unitOfWork.DBContext;
             _tokenManager = tokenManager;
+            (requestId, licenseId) = _tokenManager.GetUserIdFromToken();
             _fileValidator = new FileValidationService();
         }
         public async Task<ServiceActionResult> UploadFile(
@@ -59,7 +60,7 @@ namespace JWTUAuthLogin.Infrastructure.Repository.System_Module
                 var hasContentDispositionHeader = ContentDispositionHeaderValue.TryParse(section.ContentDisposition, out var contentDisposition);
                 if (hasContentDispositionHeader)
                 {
-                    string fileNameWithoutDoubleQuote = contentDisposition.FileName.Value.Replace("\"", "");
+                    string fileNameWithoutDoubleQuote = contentDisposition.FileName.ToString().Replace("\"", "");
 
                     if (contentDisposition.DispositionType.Equals("form-data") && !string.IsNullOrEmpty(fileNameWithoutDoubleQuote) || !string.IsNullOrEmpty(contentDisposition.FileNameStar.Value))
                     {
@@ -84,7 +85,8 @@ namespace JWTUAuthLogin.Infrastructure.Repository.System_Module
                         {
                             Directory.CreateDirectory(filePath);
                         }
-                        string fileName = Guid.NewGuid().ToString() + validatedExtension;
+                        //string fileName = Guid.NewGuid().ToString() + Path.GetExtension(filePath.FileName);
+                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(fileNameWithoutDoubleQuote);
                         string fullFilePath = Path.Combine(filePath, fileName);
                         string returnImageURL = recordType + "/" + photoCategory + "/" + fileName;
                         decimal fileSize = Convert.ToDecimal(fileArray.Length) / (1024.0m * 1024.0m); // Convert to MB
@@ -175,7 +177,7 @@ namespace JWTUAuthLogin.Infrastructure.Repository.System_Module
 
                 //Save metadata to database
                 SaveToDatabase(
-                     attachment.RefType,
+                    attachment.RefType,
                     attachment.RefID,
                     attachment.RefCategory,
                     fullUrl,
@@ -258,7 +260,7 @@ namespace JWTUAuthLogin.Infrastructure.Repository.System_Module
                 //     }
                 // }
                 SysAttachment dataRecord = new SysAttachment();
-                dataRecord.AttachId= Guid.NewGuid().ToString();
+                dataRecord.AttachId = Guid.NewGuid().ToString();
                 dataRecord.ReferenceId = recordId;
                 dataRecord.ReferenceType = recordType;
                 dataRecord.Sector = photoCategory;

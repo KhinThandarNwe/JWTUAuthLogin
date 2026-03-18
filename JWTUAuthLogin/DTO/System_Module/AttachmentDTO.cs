@@ -34,4 +34,9 @@ namespace JWTUAuthLogin.DTO.System_Module
         [JsonPropertyName("ModifiedOn")]
         public string? ModifiedOn { get; set; }
     }
+    public class AttachmentResponseDTO
+    {
+        public string? FilePath { get; set; }
+        public string? Message { get; set; }
+    }
 }
